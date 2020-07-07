@@ -6,6 +6,16 @@ using System.Threading.Tasks;
 
 namespace JosOMetodama
 {
+
+	class Primer
+	{
+		public int br;
+		public Primer(int x)
+		{
+			br = x;
+		}
+	}
+
 	class Program
 	{
 		static List<Artikal> Artikli = new List<Artikal>();
@@ -53,28 +63,44 @@ namespace JosOMetodama
 
 		static void Izdavanje()
 		{
+			//TODO Popraviti bugove u metodi :D
+
+			//TODO Ako unesemo artikal koji vec postoji na racunu, treba da samo uvecamo kolicinu 
+			//vec postojeceg a nikako da dodamo jos jednom
+
 			//TODO Kao i za unos artikla, ne izbacivati korisnika na meni kada pogresi
 			//Takdoje, nemamo nikakvu kontrolu da li uposte ima kolicine koja se trazi
 			//Tip: Mozda da, po unosu sifre, prikazemo trenutnu kolicinu odmah? :) 
 			Racun r = new Racun();
 			r.Rbr = (uint)Racuni.Count + 1;
-
-			Console.Write("Unesite sifru artikla: ");
-			string sifra = Console.ReadLine();
-
-			foreach (Artikal a in Artikli)
+			
+			do
 			{
-				if (a.Sifra == sifra)
+				Console.Write("Unesite sifru artikla: ");
+				string sifra = Console.ReadLine();
+
+				foreach (Artikal a in Artikli)
 				{
-					r.Art = a;
-					Console.Write("Unesite kolicinu: ");
-					r.Kolicina = int.Parse(Console.ReadLine());
-					a.Kolicina -= r.Kolicina;
-					Racuni.Add(r);
-					return;
+					if (a.Sifra == sifra)
+					{
+						r.Art.Add(a);
+						Console.Write("Unesite kolicinu: ");
+						int kol = int.Parse(Console.ReadLine());
+						r.Kolicina.Add(kol);
+						a.Kolicina -= kol;
+						//a.Kolicina = r.Kolicina[r.Kolicina.Count - 1]; Uzimamo zadnju stvar sa liste
+						
+						Console.Write("Unosite jos artikala? (d/n): ");
+						string unos = Console.ReadKey().KeyChar.ToString();
+						if (unos == "n")
+						{
+							Racuni.Add(r);
+							return;
+						}
+					}
 				}
-			}
-			Console.WriteLine("Nema te sifre :(");
+				Console.WriteLine("Nema te sifre :(");				
+			} while (true);  
 		}
 
 		static void Brisanje()
@@ -116,7 +142,13 @@ namespace JosOMetodama
 			Console.WriteLine("=============================");
 			foreach (Racun r in Racuni)
 			{
-				Console.WriteLine($"{r.Rbr} -- {r.Art.Naziv} {r.Kolicina} {r.Art.IzracunajIzlaznu()} {r.DajTotal()}");
+				Console.WriteLine($"Rbr. : {r.Rbr}");
+				Console.WriteLine("-------------------------");
+				for (int indeks = 0; indeks < r.Art.Count; indeks++ )
+				{
+					Console.WriteLine($"|{r.Art[indeks].Sifra}-{r.Art[indeks].Naziv}|{r.Kolicina[indeks]}|{r.Art[indeks].IzracunajIzlaznu() * r.Kolicina[indeks]}");
+				}
+				Console.WriteLine("-------------------------");
 			}
 			Console.WriteLine("=============================");
 		}
@@ -126,9 +158,9 @@ namespace JosOMetodama
 			//TODO Za domaci napraviti unos da je kulturan :) tj, da korisnika ne izbacuje na glavni meni
 			//nego da mu kaze da je pogresio i ponudi mu da ponovo unese istu stvar
 			Console.Write("Unesite novu sifru: ");
-			string sifra = Console.ReadLine();
+			string sifra = Console.ReadLine(); 
 
-			foreach (Artikal a in Artikli)
+			foreach (Artikal a in Artikli)            
 			{
 				if (a.Sifra == sifra)
 				{
@@ -137,7 +169,7 @@ namespace JosOMetodama
 				}
 			}
 
-			Console.Write("Unesite novu naziv: ");
+			Console.Write("Unesite novi naziv: ");
 			string naziv = Console.ReadLine();
 
 			foreach (Artikal a in Artikli)
@@ -184,12 +216,12 @@ namespace JosOMetodama
 	{
 		public uint Rbr;  
 
-		public Artikal Art; 
-		public int Kolicina;
+		public List<Artikal> Art = new List<Artikal>(); 
+		public List<int> Kolicina = new List<int>();
 		
 		public decimal DajTotal()
 		{
-			return Art.IzracunajIzlaznu() * Kolicina;
+			return 0;//Art[0].IzracunajIzlaznu() * Kolicina;
 		}
 	}
 
