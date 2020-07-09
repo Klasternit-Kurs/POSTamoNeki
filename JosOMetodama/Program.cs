@@ -7,14 +7,6 @@ using System.Threading.Tasks;
 namespace JosOMetodama
 {
 
-	class Primer
-	{
-		public int br;
-		public Primer(int x)
-		{
-			br = x;
-		}
-	}
 
 	class Program
 	{
@@ -47,6 +39,9 @@ namespace JosOMetodama
 					case "3":
 						Brisanje();
 						break;
+					case "4":
+						Izmena();
+						break;
 					case "5":
 						Izdavanje();
 						break;
@@ -59,6 +54,39 @@ namespace JosOMetodama
 						break;
 				}
 			} while (unos != "7");
+		}
+
+		static void Izmena()
+		{
+			Console.Write("Unesite sifru artikla: ");
+			string unos = Console.ReadLine();
+			Console.WriteLine();
+			foreach(Artikal a in Artikli)
+			{
+				if (a.Sifra == unos)
+				{
+					Console.Write("Unesite novo ime ili nista ako ga ne menjate: ");
+					unos = Console.ReadLine();
+					if (unos != "")
+					{
+						a.Naziv = unos;
+					}
+					Console.Write("Unesite novu ulaznu cenu ili nista ako ga ne menjate: ");
+					unos = Console.ReadLine();
+					if (unos != "")
+					{
+						a.Ucena = decimal.Parse(unos);
+					}
+					Console.Write("Unesite novu marzu ili nista ako ga ne menjate: ");
+					unos = Console.ReadLine();
+					if (unos != "")
+					{
+						a.MarzaProc = int.Parse(unos);
+					}
+					return;
+				}
+			}
+			Console.WriteLine("Artikal sa tom sifrom ne postoji");
 		}
 
 		static void Izdavanje()
@@ -78,20 +106,54 @@ namespace JosOMetodama
 			{
 				Console.Write("Unesite sifru artikla: ");
 				string sifra = Console.ReadLine();
-
+				bool NadjenArtikal = false;
 				foreach (Artikal a in Artikli)
 				{
 					if (a.Sifra == sifra)
 					{
-						r.Art.Add(a);
-						Console.Write("Unesite kolicinu: ");
-						int kol = int.Parse(Console.ReadLine());
-						r.Kolicina.Add(kol);
-						a.Kolicina -= kol;
-						//a.Kolicina = r.Kolicina[r.Kolicina.Count - 1]; Uzimamo zadnju stvar sa liste
+						NadjenArtikal = true;
 						
+
+						int indeksPostojeceg = -1;
+						for (int indeks = 0; indeks < r.Art.Count; indeks++)
+						{
+							if (r.Art[indeks] == a)
+							{
+								indeksPostojeceg = indeks;
+								break;
+							}
+						}
+
+						if (indeksPostojeceg == -1)
+						{
+							r.Art.Add(a);
+						}
+
+						do
+						{
+							Console.Write($"Unesite kolicinu(na stanju {a.Kolicina}): ");
+							int kol = int.Parse(Console.ReadLine());
+
+							if (kol <= a.Kolicina && kol > 0)
+							{
+								if (indeksPostojeceg == -1)
+								{
+									r.Kolicina.Add(kol);
+								}else
+								{
+									r.Kolicina[indeksPostojeceg] += kol;
+								}
+								a.Kolicina -= kol;
+								break;
+							}
+							Console.WriteLine("Pogresna kolicina!");
+						} while (true);
+
+						//a.Kolicina = r.Kolicina[r.Kolicina.Count - 1]; Uzimamo zadnju stvar sa liste
+
 						Console.Write("Unosite jos artikala? (d/n): ");
 						string unos = Console.ReadKey().KeyChar.ToString();
+						Console.WriteLine();
 						if (unos == "n")
 						{
 							Racuni.Add(r);
@@ -99,7 +161,18 @@ namespace JosOMetodama
 						}
 					}
 				}
-				Console.WriteLine("Nema te sifre :(");				
+
+
+				//Inverzija, logicko ne ili NOT !
+				//
+				//   A   |   !A
+				//----------------------
+				//   T   |   F
+				//   F   |   T
+				if (!NadjenArtikal)
+				{
+					Console.WriteLine("Nema te sifre :(");
+				}
 			} while (true);  
 		}
 
@@ -157,17 +230,29 @@ namespace JosOMetodama
 		{
 			//TODO Za domaci napraviti unos da je kulturan :) tj, da korisnika ne izbacuje na glavni meni
 			//nego da mu kaze da je pogresio i ponudi mu da ponovo unese istu stvar
-			Console.Write("Unesite novu sifru: ");
-			string sifra = Console.ReadLine(); 
-
-			foreach (Artikal a in Artikli)            
+			string sifra;
+			do
 			{
-				if (a.Sifra == sifra)
+				Console.Write("Unesite novu sifru: ");
+				sifra = Console.ReadLine();
+
+				bool PravilnaSifra = true;
+				foreach (Artikal a in Artikli)
 				{
-					Console.WriteLine("Jok :(");
-					return;
+					if (a.Sifra == sifra)
+					{
+						Console.WriteLine("Jok :(");
+						PravilnaSifra = false;
+					}
 				}
-			}
+				if (PravilnaSifra)
+				{
+					break;
+				}
+				Console.WriteLine("Sifra vec postoji");
+
+			} while (true);
+
 
 			Console.Write("Unesite novi naziv: ");
 			string naziv = Console.ReadLine();
