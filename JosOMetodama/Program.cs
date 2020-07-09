@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 namespace JosOMetodama
 {
 
-
+	//TODO napraviti novi imenik koristeci objekte i recnike :) 
+	//Mozete da napravite i drugu verziju u kojoj bi osoba jednostavno sadrzavala objekat
+	//klase KontaktInformacije, a u tom objektu bi bile sve potrebe informacije za kontakt
 	class Program
 	{
 		static List<Artikal> Artikli = new List<Artikal>();
@@ -112,8 +114,7 @@ namespace JosOMetodama
 					if (a.Sifra == sifra)
 					{
 						NadjenArtikal = true;
-						
-
+						/*
 						int indeksPostojeceg = -1;
 						for (int indeks = 0; indeks < r.Art.Count; indeks++)
 						{
@@ -127,7 +128,7 @@ namespace JosOMetodama
 						if (indeksPostojeceg == -1)
 						{
 							r.Art.Add(a);
-						}
+						}*/
 
 						do
 						{
@@ -136,13 +137,20 @@ namespace JosOMetodama
 
 							if (kol <= a.Kolicina && kol > 0)
 							{
-								if (indeksPostojeceg == -1)
+								if (r.ArtikliKolicine.ContainsKey(a))
+								{
+									r.ArtikliKolicine[a] += kol;
+								} else
+								{
+									r.ArtikliKolicine.Add(a, kol);
+								}
+								/*if (indeksPostojeceg == -1)
 								{
 									r.Kolicina.Add(kol);
 								}else
 								{
 									r.Kolicina[indeksPostojeceg] += kol;
-								}
+								}*/
 								a.Kolicina -= kol;
 								break;
 							}
@@ -217,10 +225,17 @@ namespace JosOMetodama
 			{
 				Console.WriteLine($"Rbr. : {r.Rbr}");
 				Console.WriteLine("-------------------------");
-				for (int indeks = 0; indeks < r.Art.Count; indeks++ )
+				//for (int indeks = 0; indeks < r.Art.Count; indeks++ )
+				//{
+				//	Console.WriteLine($"|{r.Art[indeks].Sifra}-{r.Art[indeks].Naziv}|{r.Kolicina[indeks]}|{r.Art[indeks].IzracunajIzlaznu() * r.Kolicina[indeks]}");
+				//}
+
+				foreach(Artikal a in r.ArtikliKolicine.Keys)
 				{
-					Console.WriteLine($"|{r.Art[indeks].Sifra}-{r.Art[indeks].Naziv}|{r.Kolicina[indeks]}|{r.Art[indeks].IzracunajIzlaznu() * r.Kolicina[indeks]}");
+					Console.WriteLine($"|{a.Sifra}-{a.Naziv}|{r.ArtikliKolicine[a]}|{a.IzracunajIzlaznu() * r.ArtikliKolicine[a]}");
 				}
+				Console.WriteLine("-------------------------");
+				Console.WriteLine($"Total: {r.DajTotal()}");
 				Console.WriteLine("-------------------------");
 			}
 			Console.WriteLine("=============================");
@@ -297,39 +312,5 @@ namespace JosOMetodama
 	}
 
 
-	class Racun
-	{
-		public uint Rbr;  
-
-		public List<Artikal> Art = new List<Artikal>(); 
-		public List<int> Kolicina = new List<int>();
-		
-		public decimal DajTotal()
-		{
-			return 0;//Art[0].IzracunajIzlaznu() * Kolicina;
-		}
-	}
-
-	class Artikal
-	{
-		public string Sifra;
-		public string Naziv;
-		public decimal Ucena; 
-		public int MarzaProc;
-		public int Kolicina;
-		                                
-		public decimal IzracunajIzlaznu()
-		{
-			return Ucena * (1 + (decimal)MarzaProc / 100);
-		}
-
-		public Artikal(string s, string n, decimal c, int m, int k)
-		{
-			Sifra = s;
-			Naziv = n;
-			Ucena = c;
-			MarzaProc = m;
-			Kolicina = k;
-		}
-	}
+	
 }
