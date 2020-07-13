@@ -27,5 +27,7 @@ namespace JosOMetodama
 			MarzaProc = m;
 			Kolicina = k;
 		}
+
+		public Artikal(){}
 	}
 }

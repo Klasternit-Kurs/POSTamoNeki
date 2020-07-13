@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace JosOMetodama
 {
@@ -24,6 +25,26 @@ namespace JosOMetodama
 			//{
 			//	a.Kolicina -= 20;
 			//}
+
+
+			if (File.Exists("artikli.txt"))
+			{
+				foreach(string red in File.ReadLines("artikli.txt"))
+				{
+					Artikal noviArt = new Artikal();
+
+					string[] artikalIzTeksta = red.Split(';');
+					//0    1      2  3    4
+					//1; Plazam; 45; 20; 10
+					noviArt.Sifra = artikalIzTeksta[0];
+					noviArt.Naziv = artikalIzTeksta[1];
+					noviArt.Ucena = decimal.Parse(artikalIzTeksta[2]);
+					noviArt.MarzaProc = int.Parse(artikalIzTeksta[3]);
+					noviArt.Kolicina = int.Parse(artikalIzTeksta[4]);
+					Artikli.Add(noviArt);
+				}
+			}
+
 			string unos;
 			do
 			{
@@ -52,10 +73,21 @@ namespace JosOMetodama
 						break;
 					case "7":
 						Console.WriteLine("Bye :) ");
+						Cuvanje();
 						Console.ReadKey();
 						break;
 				}
 			} while (unos != "7");
+		}
+
+		static void Cuvanje()
+		{
+			File.Delete("artikli.txt");
+			foreach(Artikal a in Artikli)
+			{
+				File.AppendAllText("artikli.txt", 
+					$"{a.Sifra};{a.Naziv};{a.Ucena};{a.MarzaProc};{a.Kolicina}" + Environment.NewLine);
+			}
 		}
 
 		static void Izmena()
